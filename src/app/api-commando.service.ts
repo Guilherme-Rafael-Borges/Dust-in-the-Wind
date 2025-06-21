@@ -1,28 +1,46 @@
-
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
-import { environment } from '../environments/environment';
+import { Injectable } from '@angular/core';
+import { Storage } from '@ionic/storage-angular';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiCommandoService {
 
-  private http: HttpClient = inject(HttpClient);
+  private _storage: Storage | null = null;
 
-  // URL para buscar jogos ao vivo da API-FOOTBALL
-  private url: string = 'https://v3.football.api-sports.io/fixtures?live=all';
+  constructor(private storage: Storage) {
 
-  // Configuração do cabeçalho com sua chave de API
-  private headers = new HttpHeaders({
-    'x-rapidapi-key': environment.apiFootballKey
-  });
+  }
 
-  constructor() { }
+  private async ensureStorageReady() {
+    if (!this._storage) {
+      const storage = await this.storage.create();
+      this._storage = storage;
+    }
+  }
 
-  // Novo método para buscar os placares ao vivo
-  getLiveScores() {
-    // Faz a requisição GET, passando a URL e os cabeçalhos de autenticação
-    return this.http.get(this.url, { headers: this.headers });
+  public async set(key: string, value: string) {
+    await this.ensureStorageReady();
+    const result = await this._storage!.set(key, value);
+    console.log('Set:', result);
+  }
+
+  public async get(key: string) {
+    await this.ensureStorageReady();
+    const result = await this._storage!.get(key);
+    console.log('Get:', result);
+    return result;
+  }
+
+  public async remove(key: string) {
+    await this.ensureStorageReady();
+    await this._storage!.remove(key);
+    console.log('Removed');
+  }
+
+  public async clear() {
+    await this.ensureStorageReady();
+    await this._storage!.clear();
+    console.log('Cleared');
   }
 }

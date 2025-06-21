@@ -13,6 +13,8 @@ import { environment } from './environments/environment';
 // --- INÍCIO DA CORREÇÃO DOS ÍCONES ---
 import { addIcons } from 'ionicons';
 import { mail, football, person, tvOutline } from 'ionicons/icons';
+import { IonicStorageModule } from '@ionic/storage-angular';
+import { Drivers } from '@ionic/storage';
 // --- FIM DA CORREÇÃO DOS ÍCONES ---
 
 if (environment.production) {
@@ -30,6 +32,11 @@ bootstrapApplication(AppComponent, {
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     provideIonicAngular(),
     provideRouter(routes),
-    importProvidersFrom(HttpClientModule),
+    importProvidersFrom(IonicStorageModule.forRoot({
+      name: "userDb",
+      driverOrder: [Drivers.IndexedDB]
+    })
+    ),
+    
   ],
 });
